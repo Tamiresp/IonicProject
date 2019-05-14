@@ -1,13 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
-/**
- * Generated class for the HomePage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
-
 @IonicPage()
 @Component({
   selector: 'page-home',
@@ -15,15 +8,41 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class HomePage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  public tasks = [];
+ 
+  constructor(public navCtrl: NavController, public navParams: NavParams) { }
+
+  ionViewDidEnter(): void {
+    const { description } = this.navCtrl.getByIndex(0).data;
+    const { index } = this.navCtrl.getByIndex(0).data;
+    const {qtdEdit} = this.navCtrl.getByIndex(0).data;
+
+    if (description && index === undefined) {
+      const item = {
+        description: description,
+        done: false,
+        qtd: 0
+      };
+
+      this.tasks.push(item);
+    } else if (index !== undefined) {
+      this.tasks[index].description = description;
+    }
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad HomePage');
+  private deleteTask(index: number): void {
+    this.tasks.splice(index, 1);
   }
 
-  print(){
-    alert("Ok");
-  }
+  editTask(description: string, index: number, qtdEdit: number): void {
+    const task = {
+      description: description,
+      index: index,
+      qtdEdit: qtdEdit++
+    };
 
+    this.navCtrl.push('ListPage', task);
+    
+   
+  }
 }
