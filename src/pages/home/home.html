@@ -1,56 +1,53 @@
 <ion-header>
-  <ion-navbar>
-    
-    <button ion-button menuToggle >
-        <ion-icon name="menu"></ion-icon>
-    </button>
+  <!-- <button ion-button icon-start navPush="ListPage">
+      Adicionar
+    </button> -->
   
+  <ion-navbar #content>
     <ion-title>Lista de Tarefas</ion-title>
-    <ion-searchbar item-end [(ngModel)]="descricao">
-      </ion-searchbar> 
+    <ion-menu [content]="content" side="start" menuId="first">
+        <ion-toolbar color="primary">
+          <ion-title>Start Menu</ion-title>
+        </ion-toolbar>
+        <ion-content>
+          <ion-list>
+            <ion-item>Menu Item</ion-item>
+            <ion-item>Menu Item</ion-item>
+            <ion-item>Menu Item</ion-item>
+            <ion-item>Menu Item</ion-item>
+            <ion-item>Menu Item</ion-item>
+          </ion-list>
+        </ion-content>
+      </ion-menu>
+    
   </ion-navbar>
 </ion-header>
-
-
 <ion-content padding>
-  
-  <!-- <ion-navbar> -->
-     
-    <!-- <ion-searchbar [(ngModel)]="descricao">
-    </ion-searchbar>  -->
-   
-    <ion-list>
+  <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="setFilteredItems()"></ion-searchbar>
+  <ion-list>
+    <ion-item *ngFor="let item of items; let i=index">
+        <ion-icon item-start 
+        [name]="item.done ? 'checkmark-circle-outline' : 'radio-button-off'"
+        (click)="markAsDone(item)">
+      </ion-icon>
 
-      <ion-item *ngFor="let task of tasks; let i=index">
-        <ion-icon item-start [name]="task.done ? 'checkmark-circle-outline' : 'radio-button-off'"
-          (click)="task.done = !task.done">
-        </ion-icon>
-
-        <span>
-          {{ task.description }}  {{ task.qtEdit }}
-        </span>
-        <ion-icon item-end name='create' (click)="editTask(task.description, i)"></ion-icon>
-        <ion-icon item-end name="trash" color="danger" (click)="deleteTask(i)">
-
-        </ion-icon>
-      </ion-item>
-
-
-      <ion-item *ngIf="!tasks.length">
-        <ion-note>
-          Lista vazia
-        </ion-note>
-      </ion-item>
-    </ion-list>
-
-   
-
-  <!-- </ion-navbar> -->
-
+      <span>
+          {{ item.description }}
+        </span> 
+      <ion-icon item-end name='create' (click)="editTask(item.description, i)"></ion-icon>
+      <ion-icon item-end name="trash" color="danger" (click)="deleteTask(i)"></ion-icon>
+    </ion-item>
+    <ion-item *ngIf="!items.length">
+      <ion-note>
+        Lista vazia
+      </ion-note>
+    </ion-item>
+    
+  </ion-list>
   <ion-fab right bottom>
       <button ion-fab color="primary" navPush="ListPage">
         <ion-icon name="add"></ion-icon>
       </button>
     </ion-fab>
-
+  
 </ion-content>
