@@ -16,9 +16,8 @@
   </ion-list>
 
   <button ion-button icon-start (click)="addTask()">
-    <ion-icon name="add"  [name]="item.description ? 'checkmark-circle-outline' : 'radio-button-off'"
-    (click)="markAsDone(item)"></ion-icon>
-    {{ item?.description ? 'Editar' : 'Adicionar' }}
+      <ion-icon name="add"></ion-icon>
+      {{ task?.description ? 'Editar' : 'Adicionar' }}
   </button>
 
 </ion-content>

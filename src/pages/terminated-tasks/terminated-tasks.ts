@@ -1,24 +1,26 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, MenuController, AlertController, ToastController } from 'ionic-angular';
-import { Storage } from '@ionic/storage';
+import { IonicPage, NavController, NavParams, AlertController, MenuController } from 'ionic-angular';
 import { Item } from '../../models/item.model';
-import { AngularFireAuth } from 'angularfire2/auth'
+import { Storage } from '@ionic/storage';
+/**
+ * Generated class for the TerminatedTasksPage page.
+ *
+ * See https://ionicframework.com/docs/components/#navigation for more info on
+ * Ionic pages and navigation.
+ */
 
 @IonicPage()
-
 @Component({
-  selector: 'page-home',
-  templateUrl: 'home.html',
-  providers: [AngularFireAuth]
+  selector: 'page-terminated-tasks',
+  templateUrl: 'terminated-tasks.html',
 })
-
-export class HomePage {
+export class TerminatedTasksPage {
   public items: Item[] = [];
   searchTerm: any = "";
   public qtd;
-
-  constructor(private toast: ToastController, private afAuth: AngularFireAuth, public alert: AlertController, public menu: MenuController, public navCtrl: NavController, public navParams: NavParams, public storage: Storage) { }
-
+ 
+  constructor(public alert: AlertController, public menu: MenuController, public navCtrl: NavController, public navParams: NavParams, public storage: Storage) { }
+ 
   ionViewDidLoad(error: any): void {
     this.storage.forEach((value: any, key: string) => {
       this.items.push(value);
@@ -26,21 +28,16 @@ export class HomePage {
       .catch(error);
     this.setFilteredItems();
   }
-
-  logout() {
-    this.afAuth.auth.signOut();
-  }
-
   setFilteredItems() {
-
+ 
     this.items = this.filterItems(this.searchTerm);
-
+ 
   }
   filterItems(searchTerm) {
     return this.items.filter((item) => {
       return item.description.toLowerCase().includes(searchTerm.toLowerCase());
     });
-
+ 
   }
   listItems(item: Item) {
     if (item.done != false) {
@@ -48,24 +45,11 @@ export class HomePage {
     }
     console.log(item);
   }
-  openFirst() {
-    this.menu.enable(true, 'first');
-    this.menu.open('first');
-  }
-
-  openEnd() {
-    this.menu.open('end');
-  }
-
-  openCustom() {
-    this.menu.enable(true, 'custom');
-    this.menu.open('custom');
-  }
-
+ 
   ionViewDidEnter(): void {
     const { description } = this.navCtrl.getByIndex(0).data;
     const { index } = this.navCtrl.getByIndex(0).data;
-
+ 
     if (description && index === undefined) {
       const item: Item = {
         description: description,
@@ -78,17 +62,17 @@ export class HomePage {
       this.items[index].description = description;
       this.saveTask(this.items[index]);
     }
-
+ 
   }
   markAsDone(task: Item): void {
     task.done = !task.done;
     this.saveTask(task);
   }
-  filterList(item: Item) {
-    if (item.done == false) {
-      this.saveTask(item);
-    }
-  }
+ filterList(item: Item){
+   if(item.done == false){
+     this.saveTask(item);
+   }
+ }
   saveTask(item: Item) {
     this.storage.set(item.id, item)
       .then(() => {
@@ -97,7 +81,7 @@ export class HomePage {
       })
       .catch();
   }
-
+ 
   private deleteTask(index: number): void {
     this.storage.remove(this.items[index].id)
       .then(() => {
@@ -105,7 +89,7 @@ export class HomePage {
         console.log("deletado");
       })
       .catch();
-
+ 
   }
   presentConfirm(index: number) {
     let alert = this.alert.create({
@@ -123,38 +107,20 @@ export class HomePage {
           text: 'Delete',
           handler: () => {
             this.storage.remove(this.items[index].id)
-              .then(() => {
-                this.items.splice(index, 1);
-                console.log("deletado");
-              })
-              .catch();
+            .then(() => {
+              this.items.splice(index, 1);
+              console.log("deletado");
+            })
+            .catch();
           }
         }
       ]
     });
     alert.present();
   }
-
+ 
   editTask(description: string, index: number): void {
     this.navCtrl.push('ListPage', { description: description, index: index });
   }
 
-  ionViewWillLoad() {
-    this.afAuth.authState.subscribe(data => {
-      if (data && data.email && data.uid) {
-        this.toast.create({
-          message: 'Bem Vindo, ${data.email}',
-          duration: 3000
-        }).present();
-      } else {
-        this.toast.create({
-          message: 'Não foi possível encontar usuário',
-          duration: 3000
-        }).present();
-      }
-    });
-  }
-
 }
-
-
