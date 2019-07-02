@@ -4,10 +4,10 @@
     </ion-navbar>
   </ion-header>
   <ion-content padding>
-    <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="setFilteredItems()"></ion-searchbar>
+    <ion-searchbar [(ngModel)]="searchTerm"></ion-searchbar>
     <ion-list>
-  
-      <ion-item *ngFor="let item of items; let i=index">
+        <ion-list-header no-lines> Minhas Tarefas Finalizadas</ion-list-header>
+      <ion-item *ngFor="let item of items | search:'description':searchTerm; let i=index" [hidden]="!item.done">
   
         <ion-icon item-start [name]="item.done ? 'checkmark-circle-outline' : 'radio-button-off'"
           (click)="markAsDone(item)">

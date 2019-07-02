@@ -26,19 +26,9 @@ export class TerminatedTasksPage {
       this.items.push(value);
     })
       .catch(error);
-    this.setFilteredItems();
+   
   }
-  setFilteredItems() {
  
-    this.items = this.filterItems(this.searchTerm);
- 
-  }
-  filterItems(searchTerm) {
-    return this.items.filter((item) => {
-      return item.description.toLowerCase().includes(searchTerm.toLowerCase());
-    });
- 
-  }
   listItems(item: Item) {
     if (item.done != false) {
       this.saveTask(item);
@@ -66,13 +56,9 @@ export class TerminatedTasksPage {
   }
   markAsDone(task: Item): void {
     task.done = !task.done;
-    this.saveTask(task);
+   // this.saveTask(task);
   }
- filterList(item: Item){
-   if(item.done == false){
-     this.saveTask(item);
-   }
- }
+
   saveTask(item: Item) {
     this.storage.set(item.id, item)
       .then(() => {

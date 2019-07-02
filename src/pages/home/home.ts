@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, MenuController, AlertController, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, MenuController, AlertController, ToastController, LoadingController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Item } from '../../models/item.model';
 import { AngularFireAuth } from 'angularfire2/auth'
@@ -14,28 +14,44 @@ import { AngularFireAuth } from 'angularfire2/auth'
 
 export class HomePage {
   public items: Item[] = [];
-  searchTerm: any = "";
   public qtd;
-
-  constructor(private toast: ToastController, private afAuth: AngularFireAuth, public alert: AlertController, public menu: MenuController, public navCtrl: NavController, public navParams: NavParams, public storage: Storage) { }
+  public searchTerm: string = '';
+  public mark: string = '';
+  public loading: any;
+  constructor(private toast: ToastController, private afAuth: AngularFireAuth,
+    public alert: AlertController, public menu: MenuController, public navCtrl: NavController,
+    public navParams: NavParams, public storage: Storage, public loadingController: LoadingController) { }
 
   ionViewDidLoad(error: any): void {
+    this.loading = this.loadingController.create({ content: "Logging in ,please wait..." });
+    this.loading.present();
     this.storage.forEach((value: any, key: string) => {
+      this.loading.dismissAll();
       this.items.push(value);
+      
     })
       .catch(error);
-    this.setFilteredItems();
+      
   }
 
   logout() {
-    this.afAuth.auth.signOut();
+    this.afAuth.auth.signOut()
+      .then(() => {
+        this.exibirToast('Você saiu');
+      })
+      .catch((erro: any) => {
+        this.exibirToast(erro);
+      });
+  }
+  private exibirToast(mensagem: string): void {
+    let toast = this.toast.create({
+      duration: 3000,
+      position: 'botton'
+    });
+    toast.setMessage(mensagem);
+    toast.present();
   }
 
-  setFilteredItems() {
-
-    this.items = this.filterItems(this.searchTerm);
-
-  }
   filterItems(searchTerm) {
     return this.items.filter((item) => {
       return item.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -45,6 +61,7 @@ export class HomePage {
   listItems(item: Item) {
     if (item.done != false) {
       this.saveTask(item);
+
     }
     console.log(item);
   }
@@ -83,6 +100,7 @@ export class HomePage {
   markAsDone(task: Item): void {
     task.done = !task.done;
     this.saveTask(task);
+    this.qtd++;
   }
   filterList(item: Item) {
     if (item.done == false) {
@@ -138,22 +156,7 @@ export class HomePage {
   editTask(description: string, index: number): void {
     this.navCtrl.push('ListPage', { description: description, index: index });
   }
-
-  ionViewWillLoad() {
-    this.afAuth.authState.subscribe(data => {
-      if (data && data.email && data.uid) {
-        this.toast.create({
-          message: 'Bem Vindo, ${data.email}',
-          duration: 3000
-        }).present();
-      } else {
-        this.toast.create({
-          message: 'Não foi possível encontar usuário',
-          duration: 3000
-        }).present();
-      }
-    });
-  }
+  
 
 }
 

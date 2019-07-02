@@ -4,31 +4,20 @@
       </button> -->
 
   <ion-navbar #content>
+    <ion-menu [content]="content">
+
+    </ion-menu>
     <ion-title>Lista de Tarefas</ion-title>
     <ion-icon name="exit" (click)="logout()"></ion-icon>
-    <ion-menu [content]="content" side="start" menuId="first">
-      <ion-toolbar color="primary">
-        <ion-title>Start Menu</ion-title>
-      </ion-toolbar>
-      <ion-content>
-        <ion-list>
-          <ion-item>Menu Item</ion-item>
-          <ion-item>Menu Item</ion-item>
-          <ion-item>Menu Item</ion-item>
-          <ion-item>Menu Item</ion-item>
-          <ion-item>Menu Item</ion-item>
-        </ion-list>
-      </ion-content>
-    </ion-menu>
-
   </ion-navbar>
 </ion-header>
 <ion-content padding>
-  <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="setFilteredItems()"></ion-searchbar>
+    <!-- (ionInput)="setFilteredItems()" -->
+  <ion-searchbar [(ngModel)]="searchTerm" ></ion-searchbar>
+  
   <ion-list>
-
-    <ion-item *ngFor="let item of items; let i=index">
-
+      <ion-list-header no-lines> Minhas Tarefas </ion-list-header>
+    <ion-item *ngFor="let item of items | search:'description':searchTerm;  let i=index " [hidden]="item.done">
       <ion-icon item-start [name]="item.done ? 'checkmark-circle-outline' : 'radio-button-off'"
         (click)="markAsDone(item)">
       </ion-icon>
@@ -40,7 +29,30 @@
       <ion-icon item-end name="trash" color="danger" (click)="presentConfirm(i)"></ion-icon>
 
     </ion-item>
+    
 
+    <ion-item *ngIf="!items.length">
+      <ion-note>
+        Lista vazia
+      </ion-note>
+    </ion-item>
+
+  </ion-list>
+  <ion-list>
+      <ion-list-header no-lines> Minhas Tarefas Finalizadas</ion-list-header>
+    <ion-item *ngFor="let item of items | search:'description':searchTerm;  let i=index " [hidden]="!item.done">
+      <ion-icon item-start [name]="item.done ? 'checkmark-circle-outline' : 'radio-button-off'"
+        (click)="markAsDone(item)">
+      </ion-icon>
+
+      <span>
+        {{ item.description }}
+      </span>
+      <ion-icon item-end name='create' (click)="editTask(item.description, i)"></ion-icon>
+      <ion-icon item-end name="trash" color="danger" (click)="presentConfirm(i)"></ion-icon>
+
+    </ion-item>
+    
 
     <ion-item *ngIf="!items.length">
       <ion-note>
@@ -51,16 +63,14 @@
   </ion-list>
 
   <ion-fab right bottom>
+      <button ion-fab color="secondary" navPush="TerminatedTasksPage">
+          <ion-icon name="checkmark"></ion-icon>
+        </button>
+        <br>
     <button ion-fab color="primary" navPush="ListPage">
       <ion-icon name="add"></ion-icon>
     </button>
   </ion-fab>
-  <ion-fab left bottom>
-    <button ion-fab color="secondary" navPush="TerminatedTasksPage">
-      <ion-icon name="checkmark"></ion-icon>
-    </button>
-  </ion-fab>
-
 </ion-content>
 
 <!-- colocar mensagens de erro no login e no register
